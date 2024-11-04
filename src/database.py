@@ -48,12 +48,12 @@ class Event(db.Model):
     __tablename__ = 'events'
 
     id = db.Column(db.String(50), primary_key=True, default=random_id)  
-    title = db.Column(db.String(100), nullable=False) 
-    description = db.Column(db.Text, nullable=True)  
-    date = db.Column(db.DateTime, nullable=False)  
-    venue = db.Column(db.String(100), nullable=False) 
+    event_name = db.Column(db.String(100), nullable=False) 
+    event_date = db.Column(db.DateTime, nullable=False)  
+    event_venue = db.Column(db.String(100), nullable=False) 
     total_seats = db.Column(db.Integer, nullable=False)  
     available_seats = db.Column(db.Integer, nullable=False)  
+    event_time = db.Column(db.Time, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow) 
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)  
 
@@ -61,4 +61,4 @@ class Event(db.Model):
     bookings = db.relationship('Booking', back_populates='event', lazy=True)  
 
     def __repr__(self):
-        return f'<Event {self.title} - Date: {self.date}>'
+        return f'<Event {self.event_name} - Date: {self.event_date}>'

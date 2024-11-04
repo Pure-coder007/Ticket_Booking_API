@@ -5,8 +5,8 @@ from src.constants import http_status_codes
 from src.database import db
 from flask_migrate import Migrate
 from src.auth import auth
-# from src.booking import booking
-# from src.admin import admin
+from src.booking import booking
+from src.admin import admin
 
 
 
@@ -28,8 +28,8 @@ def create_app(test_config=None):
     migrate = Migrate(app, db)
     JWTManager(app)
     app.register_blueprint(auth)
-    # app.register_blueprint(booking)    
-    # app.register_blueprint(admin)    
+    app.register_blueprint(booking)    
+    app.register_blueprint(admin)    
     
     
     return app
