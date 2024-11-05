@@ -85,3 +85,73 @@ def add_event():
     db.session.commit()
     
     return jsonify({'message': 'Event added successfully'}), http_status_codes.HTTP_201_CREATED
+
+
+
+
+# from datetime import datetime, time
+# from flask import request, jsonify
+# from flask_jwt_extended import jwt_required, get_jwt_identity
+
+@admin.put('/update_event/<event_id>')
+@jwt_required()
+def update_event(event_id):
+    admin_required = get_jwt_identity()
+    
+    if not admin_required:
+        return jsonify({'message': 'Admin access required'}), http_status_codes.HTTP_401_UNAUTHORIZED
+    
+    event = Event.query.get_or_404(event_id)
+
+    try:
+        event.event_name = request.json.get('event_name', event.event_name)
+        
+        # Update event_date
+        event_date_str = request.json.get('event_date', event.event_date)
+        if event_date_str:
+            event.event_date = datetime.strptime(event_date_str, '%d %B %Y')  # Adjust format as needed
+        
+        # Update event_time
+        event_time_str = request.json.get('event_time', event.event_time)
+        if event_time_str:
+            # Convert '2pm' or similar formats to a time object
+            event_time_obj = datetime.strptime(event_time_str, '%I%p').time()  # Adjust format as needed
+            event.event_time = event_time_obj
+        
+        event.event_venue = request.json.get('event_venue', event.event_venue)
+        event.total_seats = request.json.get('total_seats', event.total_seats)
+        event.available_seats = request.json.get('available_seats', event.available_seats)
+        
+        db.session.commit()
+        
+        return jsonify({'message': 'Event updated successfully'}), http_status_codes.HTTP_200_OK
+
+    except ValueError as ve:
+        return jsonify({'message': str(ve)}), 400
+    except Exception as e:
+        return jsonify({'message': str(e)}), 500
+
+
+
+
+
+
+
+# Delete Event
+@admin.delete('/delete_event/<event_id>')
+@jwt_required()
+def delete_event(event_id):
+    admin_required = get_jwt_identity()
+    
+    if not admin_required:
+        return jsonify({'message': 'Admin access required'}), http_status_codes.HTTP_401_UNAUTHORIZED
+    
+    
+    
+    event = Event.query.get(event_id)
+    if not event:
+        return jsonify({'message': 'Event not found'}), http_status_codes.HTTP_404_NOT_FOUND
+    db.session.delete(event)
+    db.session.commit()
+    
+    return jsonify({'message': 'Event deleted successfully'}), http_status_codes.HTTP_200_OK
